@@ -1,0 +1,26 @@
+### Test credentials
+
+POST http://localhost:8000/Auth/api/credentials/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="username"
+
+admin
+
+
+--boundary
+Content-Disposition: form-data; name="password"
+
+admin
+
+--boundary
+Content-Disposition: form-data; name="url"
+
+http://192.168.68.101:8001
+
+
+### Deactivate
+
+GET http://localhost:8000/Auth/api/deactivate/
+

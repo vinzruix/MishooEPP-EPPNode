@@ -1,0 +1,87 @@
+from abc import ABC, abstractmethod
+import requests
+
+from Auth.models import Credential, Token
+
+
+class Authenticator(ABC):
+    @abstractmethod
+    def set_credentials(self,**kwargs):
+        pass
+
+    def authenticate(self, **kwargs):
+        pass
+
+
+class AuthService(Authenticator):
+    def __init__(self, credential:Credential, token:Token):
+        self.token = token
+        self.credential = credential
+
+
+    def set_credentials(self,**kwargs):
+        self.credential.username = kwargs.get('username')
+        self.credential.password = kwargs.get('password')
+        self.credential.save()
+
+    def set_url(self,**kwargs):
+        self.credential.url = kwargs.get('url')
+        self.credential.save()
+
+
+
+    def authenticate(self):
+        self.credential.refresh_from_db()
+        self.token.refresh_from_db()
+
+        try:
+            response = requests.post(f"{self.credential.url}/users/api/token/",
+                                     json={
+                                         "username": self.credential.username,
+                                         "password": self.credential.password
+                                     })
+
+            if response.ok:
+                response = response.json()
+                self.set_tokens(access=response['access'],refresh=response["refresh"])
+                return
+
+            if response.status_code == 401:
+                self.set_credentials(username='', password='')
+
+            raise ValueError("Credentials not working")
+
+        except requests.exceptions.ConnectionError:
+            raise ValueError("Server not found or down")
+
+
+    def set_tokens(self,**kwargs):
+        self.token.refresh = kwargs.get("refresh")
+        self.token.access = kwargs.get("access")
+        self.token.save()
+
+
+    def refresh_token(self):
+        self.token.refresh_from_db()
+        self.credential.refresh_from_db()
+
+        try:
+            response = requests.post(f"{self.credential.url}/users/api/refresh/",
+                                     json={
+                                         "refresh": self.token.refresh,
+                                     })
+
+            if response.ok:
+                response = response.json()
+                self.set_credentials(refresh=self.token.refresh, access=response['access'])
+
+            if response.status_code == 401:
+                self.set_credentials(refresh="", access="")
+                self.authenticate()
+
+            raise ValueError("Credentials not working")
+
+        except requests.exceptions.ConnectionError:
+            raise ValueError("Server not found or down")
+
+

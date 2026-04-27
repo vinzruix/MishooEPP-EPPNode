@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import requests
 
+from Auth.exeptions import CredentialsExpired
 from Auth.models import Credential, Token
 
 
@@ -9,7 +10,16 @@ class Authenticator(ABC):
     def set_credentials(self,**kwargs):
         pass
 
+    @abstractmethod
+    def set_url(self,**kwargs):
+        pass
+
+    @abstractmethod
     def authenticate(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def refresh_token(self, **kwargs):
         pass
 
 
@@ -49,7 +59,7 @@ class AuthService(Authenticator):
             if response.status_code == 401:
                 self.set_credentials(username='', password='')
 
-            raise ValueError("Credentials not working")
+            raise CredentialsExpired("Credentials not working")
 
         except requests.exceptions.ConnectionError:
             raise ValueError("Server not found or down")
@@ -73,13 +83,12 @@ class AuthService(Authenticator):
 
             if response.ok:
                 response = response.json()
-                self.set_credentials(refresh=self.token.refresh, access=response['access'])
+                self.set_tokens(refresh=self.token.refresh, access=response['access'])
 
             if response.status_code == 401:
-                self.set_credentials(refresh="", access="")
+                self.set_tokens(refresh="", access="")
                 self.authenticate()
 
-            raise ValueError("Credentials not working")
 
         except requests.exceptions.ConnectionError:
             raise ValueError("Server not found or down")

@@ -24,3 +24,12 @@ http://192.168.68.101:8001
 
 GET http://localhost:8000/Auth/api/deactivate/
 
+### Test credentials
+
+POST http://localhost:8000/Test/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="image"; filename="img_5.png"
+
+< Detector/img4.webp

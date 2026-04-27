@@ -23,4 +23,5 @@ import Auth
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('Auth/', include('Auth.urls')),
+    path('Test/', include('Detector.urls'))
 ]

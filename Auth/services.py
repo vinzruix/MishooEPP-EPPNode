@@ -19,6 +19,10 @@ class Authenticator(ABC):
         pass
 
     @abstractmethod
+    def get_access_token(self, **kwargs):
+        pass
+
+    @abstractmethod
     def refresh_token(self, **kwargs):
         pass
 
@@ -44,8 +48,9 @@ class AuthService(Authenticator):
         self.credential.refresh_from_db()
         self.token.refresh_from_db()
 
+
         try:
-            response = requests.post(f"{self.credential.url}/users/api/token/",
+            response = requests.post(f"http://{self.credential.url}/epp_detection/api/epp_detection/node/token/",
                                      json={
                                          "username": self.credential.username,
                                          "password": self.credential.password
@@ -70,13 +75,18 @@ class AuthService(Authenticator):
         self.token.access = kwargs.get("access")
         self.token.save()
 
+    def get_access_token(self):
+        self.token.refresh_from_db()
+        return self.token.access
+
+
 
     def refresh_token(self):
         self.token.refresh_from_db()
         self.credential.refresh_from_db()
 
         try:
-            response = requests.post(f"{self.credential.url}/users/api/refresh/",
+            response = requests.post(f"http://{self.credential.url}/epp_detection/api/epp_detection/node/token/refresh/",
                                      json={
                                          "refresh": self.token.refresh,
                                      })

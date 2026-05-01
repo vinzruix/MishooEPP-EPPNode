@@ -11,32 +11,42 @@ from Multimedia.services import Multimedia
 
 class Incidence:
 
-    def __init__(self):
+    def __init__(self, server_url):
         self._incidences = 0
         self._epochs_clean = 0
-        self._server_url = ""
+        self._server_url = server_url
 
     def increase_epochs(self):
         self._epochs_clean = 3
+
+    def reset_epochs_clean(self):
+        self._epochs_clean = 0
 
     def send_incidence_to_server(self, **kwargs):
 
         form_data = {
             "datetime": time.time(),
-            "image": kwargs.get('image'),
             "missing_epp": kwargs.get('missing_epp')
         }
 
-        response = requests.post(f"{self._server_url}", form_data)
+        image_bytes = Multimedia.np_to_imageRGB_buffer(kwargs.get('image'), form_data["datetime"])
+
+        response = requests.post(
+            f"http://{self._server_url}/incidence/api/incidence/",
+            data=form_data,
+            files={
+                "image": ("photo.jpg", image_bytes, "image/jpeg")
+            },
+            headers={
+                "Authorization": f"Bearer {kwargs.get('access_token')}"
+            }
+        )
 
         if response.ok:
             return
 
         if response.status_code == 401:
             raise TokenExpired()
-
-
-
 
     def set_url(self, **kwargs):
         self._server_url = kwargs.get('url')
@@ -48,8 +58,10 @@ class Incidence:
 
         if self._epochs_clean >= 3:
             self.reset_incidences()
+            self.reset_epochs_clean()
 
     def increase_incidences(self):
+        print(self._incidences)
         self._incidences += 1
 
     def reset_incidences(self):

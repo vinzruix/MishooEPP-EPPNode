@@ -73,7 +73,7 @@ class YOLOChecker(Checker):
         for pk, value in epp.items():
             for equipment in value:
                 keypoints_to_check = self.pose_locator.handle_person_epp(body_part=equipment["body_part"], person=person)
-                if self.overlapper.is_inside(keypoints_to_check, equipment["bounds"]):
+                if self.overlapper.is_inside(keypoints_to_check, equipment["bounds"], equipment["body_part"]):
                     person.change_epp_status(epp_id=pk,status=True)
 
         if person.is_epp_complete():
@@ -83,6 +83,7 @@ class YOLOChecker(Checker):
 
 
     def set_epp_required(self, **kwargs):
+        print(kwargs.get('epp_required'))
         self.epp_detector.handle_epp_classes(epp_required=kwargs.get('epp_required'))
 
 

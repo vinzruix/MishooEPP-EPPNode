@@ -1,6 +1,10 @@
+from django.db import transaction
+from rest_framework.exceptions import NotAcceptable
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from scipy.linalg import rq
+
 from MishooEPP_EPPNode.core.instances import System
 
 
@@ -11,13 +15,47 @@ class CredentialsAPIView(APIView):
     @staticmethod
     def post(request):
 
-        System.set_server_login_credentials(username=request.data['username'],password=request.data['password'])
-        System.set_server_url(url=request.data['url'])
-        System.login_server()
-        System.activate_node()
+        try:
+            with transaction.atomic():
 
+
+                System.set_server_login_credentials(username=request.data['id'],password=request.data['password'])
+                System.set_server_url(url=request.data['server'])
+                System.login_server()
+                System.set_epp_required()
+                System.activate_node()
+
+        except Exception as e:
+            print(e)
+            raise NotAcceptable()
 
         return Response({"success":"Credentials set"}, status=status.HTTP_200_OK)
+
+
+class SystemPatchAPIView(APIView):
+
+    @staticmethod
+    def post(request):
+
+        node_status = request.data["status"]
+
+        if node_status is None:
+            raise NotAcceptable()
+
+        if node_status:
+            System.activate_node()
+
+        if not node_status:
+            System.deactivate_node()
+
+
+        return Response({"success": f"status changed to {node_status}"}, status=status.HTTP_200_OK)
+
+
+
+
+
+        return Response({"success": f"status changed to {node_status}"}, status=status.HTTP_200_OK)
 
 
 

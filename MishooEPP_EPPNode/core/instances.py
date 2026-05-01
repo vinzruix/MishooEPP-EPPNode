@@ -1,6 +1,7 @@
 from Auth.models import Credential, Token
 from Auth.services import AuthService
 from Checker.services import YOLOChecker
+from Incidence.services import Incidence
 from Node.models import Node
 from Node.services import NodeFacade
 
@@ -18,9 +19,4 @@ if not token_object:
     token_object = Token.objects.create()
 
 System = NodeFacade(node=node_object, auth=AuthService(credential=credential_object, token=token_object),
-                    checker=YOLOChecker())
-System.set_epp_required(epp_required={
-    "helmet": {
-    "body_part": "head"
-}
-})
+                    checker=YOLOChecker(), incidence=Incidence(server_url=credential_object.url))

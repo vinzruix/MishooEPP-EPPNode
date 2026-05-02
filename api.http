@@ -33,3 +33,14 @@ Content-Type: multipart/form-data; boundary=boundary
 Content-Disposition: form-data; name="image"; filename="img_5.png"
 
 < Detector/img4.webp
+
+
+### Test
+PATCH http://localhost:8001/Auth/api/credentials/epp_node/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="status"
+
+True
+

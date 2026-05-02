@@ -29,6 +29,9 @@ class NodeFacade:
         self.auth.set_url(url=kwargs.get('url'))
         self.incidence_handler.set_url(url=kwargs.get('url'))
 
+    def handle_permissions(self,**kwargs):
+        return self.auth.handle_permission(**kwargs)
+
 
     def refresh_credentials(self):
 

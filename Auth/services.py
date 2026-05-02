@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
+
+import jwt
 import requests
+from rest_framework.exceptions import NotAuthenticated
 
 from Auth.exeptions import CredentialsExpired
 from Auth.models import Credential, Token
@@ -17,6 +20,11 @@ class Authenticator(ABC):
     @abstractmethod
     def authenticate(self, **kwargs):
         pass
+
+    @abstractmethod
+    def handle_permission(self, **kwargs):
+        pass
+
 
     @abstractmethod
     def get_access_token(self, **kwargs):
@@ -41,6 +49,23 @@ class AuthService(Authenticator):
     def set_url(self,**kwargs):
         self.credential.url = kwargs.get('url')
         self.credential.save()
+
+    def handle_permission(self,**kwargs):
+
+        try:
+            header = kwargs.get("request").META.get('HTTP_AUTHORIZATION', '')
+            token = header.split(' ')[-1]
+            permissions = jwt.decode(token, options={"verify_signature": False})
+
+            if "sensors.create_sensor" in permissions["permissions"]:
+                return True
+
+        except Exception as e:
+            print(e)
+            pass
+
+
+        return False
 
 
 
@@ -78,6 +103,7 @@ class AuthService(Authenticator):
     def get_access_token(self):
         self.token.refresh_from_db()
         return self.token.access
+
 
 
 

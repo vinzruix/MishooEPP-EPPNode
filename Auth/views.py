@@ -17,9 +17,6 @@ class CredentialsAPIView(APIView):
         try:
             with transaction.atomic():
 
-                if not System.handle_permissions(request=request):
-                    raise NotAuthenticated()
-
                 System.set_server_login_credentials(username=request.data['id'], password=request.data['password'])
                 System.set_server_url(url=request.data['server'])
                 System.login_server()
@@ -34,8 +31,6 @@ class CredentialsAPIView(APIView):
     @staticmethod
     def patch(request):
 
-        if not System.handle_permissions(request=request):
-            raise NotAuthenticated()
 
         node_status = request.data["status"]
 

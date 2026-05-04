@@ -1,21 +1,37 @@
 import io
+import time
 
 import cv2
 from PIL import Image
 from django.core.files.base import ContentFile
+from picamera2 import Picamera2
 
 
 class Multimedia:
 
     @staticmethod
     def take_photo_camera():
-        capture = cv2.VideoCapture(0)
+        picam2 = Picamera2()
+        config = picam2.create_still_configuration(
+            main={"size": (1280, 720)}
+        )
+        picam2.configure(config)
+
+        picam2.start()
+
         frame = None
 
         for _ in range(10):
-            ret, frame = capture.read()
+            frame = picam2.capture_array()
+            time.sleep(0.05)
 
-        capture.release()
+        picam2.stop()
+        picam2.close()
+
+        frame = frame[:, :, :3]
+
+
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         return frame
 

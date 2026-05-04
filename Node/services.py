@@ -37,7 +37,7 @@ class NodeFacade:
 
         try:
             self.auth.refresh_token()
-        except CredentialsExpired:
+        except (CredentialsExpired, ValueError):
             self.deactivate_node()
 
 
@@ -81,7 +81,7 @@ class NodeFacade:
 
             try:
                 self.incidence_handler.incidence_handler(missing_epp=missing_epp, image=image, access_token=self.get_access_token())
-            except TokenExpired:
+            except (TokenExpired, ValueError):
                 self.refresh_credentials()
 
         if not self.node.is_active:

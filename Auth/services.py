@@ -57,6 +57,7 @@ class AuthService(Authenticator):
             token = header.split(' ')[-1]
             permissions = jwt.decode(token, options={"verify_signature": False})
 
+
             if "sensors.create_sensor" in permissions["permissions"]:
                 return True
 

@@ -14,8 +14,10 @@ class CredentialsAPIView(APIView):
     @staticmethod
     def post(request):
 
+
         try:
             with transaction.atomic():
+
 
                 if not System.handle_permissions(request=request):
                     raise NotAuthenticated()

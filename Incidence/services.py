@@ -31,22 +31,31 @@ class Incidence:
 
         image_bytes = Multimedia.np_to_imageRGB_buffer(kwargs.get('image'), form_data["datetime"])
 
-        response = requests.post(
-            f"http://{self._server_url}/incidence/api/incidence/",
-            data=form_data,
-            files={
-                "image": ("photo.jpg", image_bytes, "image/jpeg")
-            },
-            headers={
-                "Authorization": f"Bearer {kwargs.get('access_token')}"
-            }
-        )
+        try:
+            response = requests.post(
+                f"http://{self._server_url}/incidence/api/incidence/",
+                data=form_data,
+                files={
+                    "image": ("photo.jpg", image_bytes, "image/jpeg")
+                },
+                headers={
+                    "Authorization": f"Bearer {kwargs.get('access_token')}"
+                }
+            )
 
-        if response.ok:
-            return
+            if response.ok:
+                return
 
-        if response.status_code == 401:
-            raise TokenExpired()
+            if response.status_code == 401:
+                raise TokenExpired()
+
+
+        except requests.exceptions.ConnectionError:
+            raise ValueError("Server not found or down")
+
+
+
+
 
     def set_url(self, **kwargs):
         self._server_url = kwargs.get('url')

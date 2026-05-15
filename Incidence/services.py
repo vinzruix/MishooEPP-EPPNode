@@ -46,12 +46,15 @@ class Incidence:
             if response.ok:
                 return
 
-            if response.status_code == 401:
+            if response.status_code == 401 or response.status_code == 500:
                 raise TokenExpired()
 
 
         except requests.exceptions.ConnectionError:
             raise ValueError("Server not found or down")
+
+        except Exception as e:
+            print(e)
 
 
 

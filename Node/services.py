@@ -61,7 +61,6 @@ class NodeFacade:
 
     def send_node_data(self, **kwargs):
         self.node.refresh_from_db()
-        self.auth.credential.refresh_from_db()
 
 
         if not self.node.is_active:
@@ -84,7 +83,6 @@ class NodeFacade:
                 self.incidence_handler.increase_incidences()
 
             try:
-                self.incidence_handler.set_url(self.auth.credential.url)
                 self.incidence_handler.incidence_handler(missing_epp=missing_epp, image=image, access_token=self.get_access_token())
             except (TokenExpired, ValueError):
                 self.refresh_credentials()

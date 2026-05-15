@@ -71,6 +71,7 @@ class NodeFacade:
         if self.node.is_active:
             self.set_epp_required()
 
+
             try:
                 is_epp_used_correctly, missing_epp, image = self.checker.check_epp_correctly_used(**kwargs)
             except Exception as e:

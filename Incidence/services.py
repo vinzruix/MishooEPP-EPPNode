@@ -31,7 +31,6 @@ class Incidence:
 
         image_bytes = Multimedia.np_to_imageRGB_buffer(kwargs.get('image'), form_data["datetime"])
 
-
         try:
             response = requests.post(
                 f"http://{self._server_url}/incidence/api/incidence/",

@@ -30,7 +30,6 @@ class Incidence:
         }
 
         image_bytes = Multimedia.np_to_imageRGB_buffer(kwargs.get('image'), form_data["datetime"])
-        print(self._server_url)
 
         try:
             response = requests.post(

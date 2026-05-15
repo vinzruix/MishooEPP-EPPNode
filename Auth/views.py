@@ -18,7 +18,6 @@ class CredentialsAPIView(APIView):
         try:
             with transaction.atomic():
 
-
                 if not System.handle_permissions(request=request):
                     raise NotAuthenticated()
 

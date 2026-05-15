@@ -52,15 +52,15 @@ class YOLOChecker(Checker):
             epp_detected = self.check_epp_in_camera(image=person[1])
 
             try:
-                person = self.search_people_in_camera(image=person[1])
+                new_person = self.search_people_in_camera(image=person[1])
             except NoHumansDetected:
                 continue
 
 
-            is_user_using_epp_correctly, missing_epp = self.check_epp_overlap(epp=epp_detected, person=person[0][0])
+            is_user_using_epp_correctly, missing_epp = self.check_epp_overlap(epp=epp_detected, person=new_person[0][0])
 
             if not is_user_using_epp_correctly:
-                return False, self.epp_detector.search_epp_name_by_id(epp_id=missing_epp), person[0][1]
+                return False, self.epp_detector.search_epp_name_by_id(epp_id=missing_epp), kwargs.get("image")
 
 
         return True, None, None

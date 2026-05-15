@@ -30,7 +30,7 @@ class Incidence:
         }
 
         image_bytes = Multimedia.np_to_imageRGB_buffer(kwargs.get('image'), form_data["datetime"])
-        print(self._server_url)
+
 
         try:
             response = requests.post(
@@ -47,12 +47,15 @@ class Incidence:
             if response.ok:
                 return
 
-            if response.status_code == 401:
+            if response.status_code == 401 or response.status_code == 500:
                 raise TokenExpired()
 
 
         except requests.exceptions.ConnectionError:
             raise ValueError("Server not found or down")
+
+        except Exception as e:
+            print(e)
 
 
 

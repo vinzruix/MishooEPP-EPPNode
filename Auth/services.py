@@ -87,7 +87,7 @@ class AuthService(Authenticator):
                 self.set_tokens(access=response['access'],refresh=response["refresh"])
                 return
 
-            if response.status_code == 401:
+            if response.status_code == 401 or response.status_code == 500:
                 self.set_credentials(username='', password='')
 
             raise CredentialsExpired("Credentials not working")
@@ -122,7 +122,7 @@ class AuthService(Authenticator):
                 response = response.json()
                 self.set_tokens(refresh=self.token.refresh, access=response['access'])
 
-            if response.status_code == 401:
+            if response.status_code == 401 or response.status_code == 500:
                 self.set_tokens(refresh="", access="")
                 self.authenticate()
 

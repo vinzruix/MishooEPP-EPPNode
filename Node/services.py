@@ -63,11 +63,14 @@ class NodeFacade:
         self.node.refresh_from_db()
 
 
+        if not self.node.is_active:
+            print("No haciendo nada xdxddx")
+            return
+
         if self.node.is_active:
             self.set_epp_required()
 
             try:
-
                 is_epp_used_correctly, missing_epp, image = self.checker.check_epp_correctly_used(**kwargs)
             except Exception as e:
                 print(e)
@@ -83,6 +86,3 @@ class NodeFacade:
                 self.incidence_handler.incidence_handler(missing_epp=missing_epp, image=image, access_token=self.get_access_token())
             except (TokenExpired, ValueError):
                 self.refresh_credentials()
-
-        if not self.node.is_active:
-            print("No haciendo nada xdxddx")

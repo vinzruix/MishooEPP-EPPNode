@@ -6,6 +6,9 @@ from Auth.services import Authenticator
 from Checker.services import Checker
 from Node.models import Node
 
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
 
 class NodeFacade:
     def __init__(self, node: Node, auth: Authenticator, checker: Checker, incidence: Incidence):
@@ -64,7 +67,7 @@ class NodeFacade:
 
 
         if not self.node.is_active:
-            print("No haciendo nada xdxddx")
+            logger.info("No hago nada")
             return
 
         if self.node.is_active:

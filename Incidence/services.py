@@ -7,7 +7,9 @@ from jinja2.utils import missing
 
 from Auth.exeptions import TokenExpired
 from Multimedia.services import Multimedia
+from celery.utils.log import get_task_logger
 
+logger = get_task_logger(__name__)
 
 class Incidence:
 
@@ -73,8 +75,9 @@ class Incidence:
             self.reset_epochs_clean()
 
     def increase_incidences(self):
-        print(self._incidences)
         self._incidences += 1
+        logger.info(f"{self._incidences}")
+
 
     def reset_incidences(self):
         self._incidences = 0

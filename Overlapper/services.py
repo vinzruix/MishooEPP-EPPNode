@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from celery.utils.log import get_task_logger
 
+logger = get_task_logger(__name__)
 
 class Overlapper(ABC):
 
@@ -17,7 +19,7 @@ class YoloOverlapper(Overlapper):
         for x, y, conf in keypoints:
             if conf > self._confidence:
 
-                print(body_part)
+                logger.info(body_part)
 
                 if body_part == "head":
 

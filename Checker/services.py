@@ -7,6 +7,10 @@ from Overlapper.services import Overlapper, YoloOverlapper
 from Pose.exeptions import NoHumansDetected
 from Pose.services import PoseLocator, YoloPoseLocator
 
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
+
 
 class Checker(ABC):
 
@@ -83,7 +87,7 @@ class YOLOChecker(Checker):
 
 
     def set_epp_required(self, **kwargs):
-        print(kwargs.get('epp_required'))
+        logger.info(kwargs.get('epp_required'))
         self.epp_detector.handle_epp_classes(epp_required=kwargs.get('epp_required'))
 
 
